@@ -33,6 +33,13 @@
             {
                 if (value == this._mp3FileLoaded) return;
                 this._mp3FileLoaded = value;
+
+                this.UpdateMp3FileLabels();
+
+                // The following lines will force the properties to re-validate based on the new MP3 file
+                TrimStartPosition = TrimStartPosition;
+                TrimEndPosition = TrimEndPosition;
+
                 this.OnPropertyChanged();
             }
         }
@@ -61,6 +68,8 @@
             set
             {
                 this._trimStartPosition = ValidateTrimStartPosition(value);
+                UpdateSplitDuration();
+                UpdateTrimDurationLabel();
                 this.OnPropertyChanged();
             }
         }
@@ -75,6 +84,8 @@
             set
             {
                 this._trimEndPosition = ValidateTrimEndPosition(value);
+                UpdateSplitDuration();
+                UpdateTrimDurationLabel();
                 this.OnPropertyChanged();
             }
         }
@@ -91,6 +102,9 @@
             set
             {
                 this._splitCount = value;
+
+                UpdateSplitDuration();
+
                 this.OnPropertyChanged();
             }
         }
@@ -106,6 +120,8 @@
             {
                 if (value == this._outputPath) return;
                 this._outputPath = value;
+                this.OutputFolderLabel = OutputPath;
+
                 this.OnPropertyChanged();
             }
         }
@@ -152,6 +168,20 @@
             }
         }
 
+        private string _trimDurationLabel;
+        public string TrimDurationLabel
+        {
+            get
+            {
+                return this._trimDurationLabel;
+            }
+            set
+            {
+                this._trimDurationLabel = $"Trim duration:\t{value}";
+                this.OnPropertyChanged();
+            }
+        }
+
         private string _outputFolderLabel;
         public string OutputFolderLabel
         {
@@ -175,6 +205,7 @@
             LoadMp3FileCommand = new CustomCommand(LoadMp3File, CanLoadMp3File);
             SelectFolderCommand = new CustomCommand(SelectFolder, CanSelectFolder);
             ProcessFileCommand = new CustomCommand(ProcessFile, CanProcessFile);
+            SplitCount = 1;
         }
 
         #endregion
@@ -289,18 +320,29 @@
             return result;
         }
 
+        private void UpdateSplitDuration()
+        {
+            var splitTimeInTicks = this.TrimDuration.Ticks / SplitCount;
+
+            // Ensure that the final split is not ridiculously short from leftover ticks
+            if (TrimDuration.Ticks%SplitCount > 0)
+            {
+                splitTimeInTicks++;
+            }
+
+            this.SplitDuration = new TimeSpan(splitTimeInTicks);
+        }
+
         private void UpdateMp3FileLabels()
         {
             Mp3FileNameLabel = this.Mp3FileLoaded.FileName;
             Mp3FileSizeLabel = $"{this.Mp3FileLoaded.SizeMb:N2} MB";
+            Mp3FileLengthLabel = this.Mp3FileLoaded.Length.ToHourMinSec();
+        }
 
-            var length = this.Mp3FileLoaded.Length;
-            var lengthString = "";
-            lengthString += length.Hours > 0 ? $"{length.Hours}h " : "";
-            lengthString += $"{length.Minutes}m ";
-            lengthString += $"{length.Seconds}s";
-
-            Mp3FileLengthLabel = lengthString;
+        private void UpdateTrimDurationLabel()
+        {
+            this.TrimDurationLabel = TrimDuration.ToHourMinSec();
         }
 
         #endregion
@@ -310,25 +352,6 @@
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            if (propertyName == "Mp3FileLoaded")
-            {
-                this.UpdateMp3FileLabels();
-
-                // The following lines will force the properties to re-validate based on the new MP3 file
-                TrimStartPosition = TrimStartPosition;
-                TrimEndPosition = TrimEndPosition;
-            }
-
-            if (propertyName == "OutputPath")
-            {
-                this.OutputFolderLabel = OutputPath;
-            }
-
-            if (propertyName == "SplitCount")
-            {
-                var splitTimeInTicks = TrimDuration.Ticks/SplitCount;
-                this.SplitDuration = new TimeSpan(splitTimeInTicks);
-            }
         }
 
         #endregion

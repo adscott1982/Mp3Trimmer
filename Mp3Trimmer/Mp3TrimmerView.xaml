@@ -73,6 +73,7 @@
         <!--Progress Log Section-->
         <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" >
             <TextBlock Margin="5" FontWeight="Bold">File Details</TextBlock>
+            <TextBlock Margin="5" Text="{Binding TrimDurationLabel}"/>
             <TextBlock Margin="5" Text="{Binding Mp3FileNameLabel}"/>
             <TextBlock Margin="5" Text="{Binding Mp3FileSizeLabel}"/>
             <TextBlock Margin="5" Text="{Binding Mp3FileLengthLabel}"/>
