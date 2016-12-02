@@ -7,7 +7,8 @@
         public static string ToHourMinSec(this TimeSpan timeSpan)
         {
             var timeSpanString = "";
-            timeSpanString += timeSpan.Hours > 0 ? $"{timeSpan.Hours}h " : "";
+            var hours = (timeSpan.Days * 24) + timeSpan.Hours;
+            timeSpanString += hours > 0 ? $"{hours}h " : "";
             timeSpanString += $"{timeSpan.Minutes}m ";
             timeSpanString += $"{timeSpan.Seconds}s";
 
