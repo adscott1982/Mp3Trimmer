@@ -52,7 +52,6 @@
             <Separator VerticalAlignment="Top"/>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Margin="5" FontWeight="Bold">Split Files</TextBlock>
-                <CheckBox Margin="5" IsChecked="False"></CheckBox>
                 <TextBlock Margin="5" Text="Count ="/>
                 <xctk:IntegerUpDown Margin="5" Minimum="1" Maximum="999" Value="{Binding SplitCount}"/>
             </StackPanel>

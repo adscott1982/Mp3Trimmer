@@ -62,5 +62,44 @@ namespace Mp3Tools
                 }
             }
         }
+
+        /// <summary>
+        /// Will trim an MP3 file to a target file based on provided parameters, splitting files based on split duration.
+        /// </summary>
+        /// <param name="sourceFile">The source MP3 file.</param>
+        /// <param name="targetFile">The target MP3 file.</param>
+        /// <param name="startPosition">The start position of the trim.</param>
+        /// <param name="endPosition">The end position of the trim.</param>
+        /// <param name="splitDuration">The duration of each split.</param>
+        public static void Trim(string sourceFile, string targetFile, TimeSpan startPosition, TimeSpan endPosition, TimeSpan splitDuration)
+        {
+            using (var mp3FileReader = new Mp3FileReader(sourceFile))
+            {
+                // Start at defined start position
+                mp3FileReader.CurrentTime = startPosition;
+                var currentSplit = 1;
+
+                while (mp3FileReader.CurrentTime < endPosition)
+                {
+                    var splitTime = mp3FileReader.CurrentTime + splitDuration;
+                    var fileName = Path.GetFileNameWithoutExtension(targetFile);
+                    var directoryPath = Path.GetDirectoryName(targetFile);
+                    fileName += $"-{currentSplit:D3}.mp3";
+                    var filePath = Path.Combine(directoryPath, fileName);
+
+                    using (var writer = File.Create(filePath))
+                    {
+                        while (mp3FileReader.CurrentTime < splitTime)
+                        {
+                            var frame = mp3FileReader.ReadNextFrame();
+                            if (frame == null) break;
+                            writer.Write(frame.RawData, 0, frame.RawData.Length);
+                        }
+                    }
+
+                    currentSplit++;
+                }
+            }
+        }
     }
 }

@@ -270,12 +270,21 @@ namespace Mp3Trimmer
         private void ProcessFile(object obj)
         {
             
-            var filename = Path.GetFileNameWithoutExtension(Mp3FileLoaded.FilePath) + "01" + ".mp3";
+            var filename = Path.GetFileNameWithoutExtension(Mp3FileLoaded.FilePath) + "-trimmed.mp3";
             var targetPath = Path.Combine(OutputPath, filename);
 
             Logger.Add($"Output path - {targetPath}");
             Logger.Add("Starting trim process.");
-            Mp3File.Trim(Mp3FileLoaded.FilePath, targetPath, TrimStartPosition, TrimEndPosition);
+
+            if (SplitCount > 1)
+            {
+                Mp3File.Trim(Mp3FileLoaded.FilePath, targetPath, TrimStartPosition, TrimEndPosition, SplitDuration);
+            }
+            else
+            {
+                Mp3File.Trim(Mp3FileLoaded.FilePath, targetPath, TrimStartPosition, TrimEndPosition);
+            }
+
             Logger.Add("Trim complete.");
         }
 
