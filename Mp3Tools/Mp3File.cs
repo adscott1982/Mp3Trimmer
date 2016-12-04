@@ -47,9 +47,9 @@ namespace Mp3Tools
         /// <param name="targetFile">The target MP3 file.</param>
         /// <param name="startPosition">The start position of the trim.</param>
         /// <param name="endPosition">The end position of the trim.</param>
-        public static void Trim(Mp3File sourceFile, string targetFile, TimeSpan startPosition, TimeSpan endPosition)
+        public static void Trim(string sourceFile, string targetFile, TimeSpan startPosition, TimeSpan endPosition)
         {
-            using (var mp3FileReader = new Mp3FileReader(sourceFile.FilePath))
+            using (var mp3FileReader = new Mp3FileReader(sourceFile))
             using (var writer = File.Create(targetFile))
             {
                 mp3FileReader.CurrentTime = startPosition;

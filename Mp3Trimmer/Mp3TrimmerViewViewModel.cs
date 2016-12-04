@@ -1,4 +1,6 @@
-﻿namespace Mp3Trimmer
+﻿using System.IO;
+
+namespace Mp3Trimmer
 {
     using System.Windows.Input;
     using AndyTools.Wpf;
@@ -21,6 +23,8 @@
         public ICommand ProcessFileCommand { get; }
 
         #region Properties
+
+        public ILogger Logger { get; set; }
 
         private Mp3File _mp3FileLoaded;
         public Mp3File Mp3FileLoaded
@@ -202,6 +206,7 @@
 
         public Mp3TrimmerViewViewModel()
         {
+            Logger = new Logger();
             LoadMp3FileCommand = new CustomCommand(LoadMp3File, CanLoadMp3File);
             SelectFolderCommand = new CustomCommand(SelectFolder, CanSelectFolder);
             ProcessFileCommand = new CustomCommand(ProcessFile, CanProcessFile);
@@ -251,9 +256,10 @@
         private bool CanProcessFile(object obj)
         {
             var isFileLoaded = Mp3FileLoaded != null;
+            var hasTarget = OutputPath != null;
             var isValidTrim = !TrimStartPosition.Equals(TrimEndPosition);
 
-            if (isFileLoaded && isValidTrim)
+            if (isFileLoaded && isValidTrim && hasTarget)
             {
                 return true;
             }
@@ -263,7 +269,14 @@
 
         private void ProcessFile(object obj)
         {
-            throw new NotImplementedException();
+            
+            var filename = Path.GetFileNameWithoutExtension(Mp3FileLoaded.FilePath) + "01" + ".mp3";
+            var targetPath = Path.Combine(OutputPath, filename);
+
+            Logger.Add($"Output path - {targetPath}");
+            Logger.Add("Starting trim process.");
+            Mp3File.Trim(Mp3FileLoaded.FilePath, targetPath, TrimStartPosition, TrimEndPosition);
+            Logger.Add("Trim complete.");
         }
 
         #endregion
@@ -325,6 +338,7 @@
             var splitTimeInTicks = this.TrimDuration.Ticks / SplitCount;
 
             // Ensure that the final split is not ridiculously short from leftover ticks
+            // Splits will always be slightly longer when a timespan does not divide perfectly
             if (TrimDuration.Ticks%SplitCount > 0)
             {
                 splitTimeInTicks++;

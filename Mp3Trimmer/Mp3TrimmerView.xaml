@@ -83,8 +83,7 @@
         <!--Progress Log Section-->
         <DockPanel Grid.Row="2" Grid.Column="1" Grid.RowSpan="3" >
             <TextBlock DockPanel.Dock="Top" Margin="5" FontWeight="Bold">Progress Log</TextBlock>
-            <ListView   Margin="5,0" ></ListView>
+            <ListView Margin="5,0" ItemsSource="{Binding Logger.Log}" />
         </DockPanel>
-
     </Grid>
 </Window>

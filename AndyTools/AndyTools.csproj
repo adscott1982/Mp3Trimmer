@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Wpf\ILogger.cs" />
+    <Compile Include="Wpf\Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\TimeSpanExtensions.cs" />
     <Compile Include="Utilities\MathExtensions.cs" />
