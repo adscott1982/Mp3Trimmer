@@ -1,4 +1,6 @@
-﻿namespace Mp3Trimmer
+﻿using System.Threading.Tasks;
+
+namespace Mp3Trimmer
 {
     using System.IO;
     using System.Windows.Input;
@@ -27,6 +29,21 @@
         #region Properties
 
         public ILogger Logger { get; set; }
+
+        private bool _isIdle;
+        public bool IsIdle
+        {
+            get { return _isIdle; }
+            set
+            {
+                if (value != _isIdle)
+                {
+                    _isIdle = value;
+                    this.OnPropertyChanged();
+                    if (_isIdle) CommandManager.InvalidateRequerySuggested();
+                }
+            }
+        }
 
         private Mp3File _mp3FileLoaded;
         public Mp3File Mp3FileLoaded
@@ -212,7 +229,9 @@
             LoadMp3FileCommand = new CustomCommand(LoadMp3File, CanLoadMp3File);
             SelectFolderCommand = new CustomCommand(SelectFolder, CanSelectFolder);
             ProcessFileCommand = new CustomCommand(ProcessFile, CanProcessFile);
+
             SplitCount = 1;
+            IsIdle = true;
         }
 
         #endregion
@@ -221,10 +240,10 @@
 
         private bool CanLoadMp3File(object obj)
         {
-            return true;
+            return IsIdle;
         }
 
-        private void LoadMp3File(object obj)
+        private async void LoadMp3File(object obj)
         {
             var openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "MP3 files (*.mp3)|*.mp3";
@@ -232,7 +251,11 @@
 
             if (openFileDialog.ShowDialog() == true)
             {
-                this.Mp3FileLoaded = new Mp3File(openFileDialog.FileName);
+                IsIdle = false;
+
+                this.Mp3FileLoaded = await Task.Run<Mp3File>(() => new Mp3File(openFileDialog.FileName));
+
+                IsIdle = true;
             }
         }
 
@@ -261,7 +284,7 @@
             var hasTarget = OutputPath != null;
             var isValidTrim = !TrimStartPosition.Equals(TrimEndPosition);
 
-            if (isFileLoaded && isValidTrim && hasTarget)
+            if (isFileLoaded && isValidTrim && hasTarget && IsIdle)
             {
                 return true;
             }
@@ -269,9 +292,10 @@
             return false;
         }
 
-        private void ProcessFile(object obj)
+        private async void ProcessFile(object obj)
         {
-            
+            IsIdle = false;
+
             var filename = Path.GetFileNameWithoutExtension(Mp3FileLoaded.FilePath) + "-trimmed.mp3";
             var targetPath = Path.Combine(OutputPath, filename);
 
@@ -280,14 +304,18 @@
 
             if (SplitCount > 1)
             {
-                Mp3File.Trim(Mp3FileLoaded.FilePath, targetPath, TrimStartPosition, TrimEndPosition, SplitDuration);
+                await Task.Run(() =>
+                    Mp3File.Trim(Mp3FileLoaded.FilePath, targetPath, TrimStartPosition, TrimEndPosition, SplitDuration));
             }
             else
             {
-                Mp3File.Trim(Mp3FileLoaded.FilePath, targetPath, TrimStartPosition, TrimEndPosition);
+                await Task.Run(() =>
+                    Mp3File.Trim(Mp3FileLoaded.FilePath, targetPath, TrimStartPosition, TrimEndPosition));
             }
 
             Logger.Add("Trim complete.");
+
+            IsIdle = true;
         }
 
         #endregion
