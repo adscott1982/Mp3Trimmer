@@ -1,21 +1,23 @@
-﻿using System.IO;
-
-namespace Mp3Trimmer
+﻿namespace Mp3Trimmer
 {
+    using System.IO;
     using System.Windows.Input;
     using AndyTools.Wpf;
     using System.Runtime.CompilerServices;
     using System.ComponentModel;
     using Mp3Tools;
     using System;
-
     using AndyTools.Utilities;
-
     using Ookii.Dialogs.Wpf;
     using Microsoft.Win32;
 
     public class Mp3TrimmerViewViewModel : INotifyPropertyChanged
     {
+        // TODO Implement IOC throughout viewmodel
+        // TODO Make certain commands async
+        // TODO Implement Time remaining for startposition
+        // TODO Implement Duration for endposition
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ICommand LoadMp3FileCommand { get; }
