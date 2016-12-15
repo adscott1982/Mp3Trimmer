@@ -16,9 +16,8 @@ namespace Mp3Trimmer
     public class Mp3TrimmerViewViewModel : INotifyPropertyChanged
     {
         // TODO Implement IOC throughout viewmodel
-        // TODO Make certain commands async
-        // TODO Implement Time remaining for startposition
-        // TODO Implement Duration for endposition
+        // TODO Implement callbacks from trimming task into log
+        // TODO Change timer controls to numeric up down for hour/min/sec
 
         public event PropertyChangedEventHandler PropertyChanged;
 
