@@ -12,6 +12,7 @@ namespace Mp3Tools
     using System;
     using System.IO;
     using NAudio.Wave;
+    using AndyTools.Utilities;
 
     /// <summary>
     /// Class which provides MP3 file operations.
@@ -47,7 +48,8 @@ namespace Mp3Tools
         /// <param name="targetFile">The target MP3 file.</param>
         /// <param name="startPosition">The start position of the trim.</param>
         /// <param name="endPosition">The end position of the trim.</param>
-        public static void Trim(string sourceFile, string targetFile, TimeSpan startPosition, TimeSpan endPosition)
+        /// <param name="progressHandler"></param>
+        public static void Trim(string sourceFile, string targetFile, TimeSpan startPosition, TimeSpan endPosition, ProgressManager progressManager)
         {
             using (var mp3FileReader = new Mp3FileReader(sourceFile))
             using (var writer = File.Create(targetFile))
@@ -71,7 +73,8 @@ namespace Mp3Tools
         /// <param name="startPosition">The start position of the trim.</param>
         /// <param name="endPosition">The end position of the trim.</param>
         /// <param name="splitDuration">The duration of each split.</param>
-        public static void Trim(string sourceFile, string targetFile, TimeSpan startPosition, TimeSpan endPosition, TimeSpan splitDuration)
+        /// <param name="progressHandler"></param>
+        public static void Trim(string sourceFile, string targetFile, TimeSpan startPosition, TimeSpan endPosition, TimeSpan splitDuration, ProgressManager progressManager)
         {
             using (var mp3FileReader = new Mp3FileReader(sourceFile))
             {
@@ -97,6 +100,12 @@ namespace Mp3Tools
                         }
                     }
 
+                    var relativeCurrTime = mp3FileReader.CurrentTime - startPosition;
+                    var relativeEndTime = endPosition - startPosition;
+                    var progress = Math.Round((double)relativeCurrTime.Ticks / relativeEndTime.Ticks * 100);
+
+                    progressManager.ProgressPercentage.Report((int)progress);
+                    progressManager.ProgressString.Report($"Written split [{currentSplit}]: {fileName}");
                     currentSplit++;
                 }
             }

@@ -27,6 +27,19 @@ namespace Mp3Trimmer
 
         #region Properties
 
+        private int _progressBarValue;
+        public int ProgressBarValue
+        {
+            get { return _progressBarValue; }
+            set
+            {
+                if (value != _progressBarValue)
+                {
+                    _progressBarValue = value;
+                    this.OnPropertyChanged();
+                }
+            }  
+        }
         public ILogger Logger { get; set; }
 
         private bool _isIdle;
@@ -293,6 +306,9 @@ namespace Mp3Trimmer
 
         private async void ProcessFile(object obj)
         {
+            
+            var progressManager = new ProgressManager(Logger, SetProgressBarValue);
+
             IsIdle = false;
 
             var filename = Path.GetFileNameWithoutExtension(Mp3FileLoaded.FilePath) + "-trimmed.mp3";
@@ -304,12 +320,12 @@ namespace Mp3Trimmer
             if (SplitCount > 1)
             {
                 await Task.Run(() =>
-                    Mp3File.Trim(Mp3FileLoaded.FilePath, targetPath, TrimStartPosition, TrimEndPosition, SplitDuration));
+                    Mp3File.Trim(Mp3FileLoaded.FilePath, targetPath, TrimStartPosition, TrimEndPosition, SplitDuration, progressManager));
             }
             else
             {
                 await Task.Run(() =>
-                    Mp3File.Trim(Mp3FileLoaded.FilePath, targetPath, TrimStartPosition, TrimEndPosition));
+                    Mp3File.Trim(Mp3FileLoaded.FilePath, targetPath, TrimStartPosition, TrimEndPosition, progressManager));
             }
 
             Logger.Add("Trim complete.");
@@ -320,6 +336,11 @@ namespace Mp3Trimmer
         #endregion
 
         #region Methods
+
+        private void SetProgressBarValue(int value)
+        {
+            ProgressBarValue = value;
+        }
 
         private TimeSpan ValidateTrimStartPosition(TimeSpan value)
         {
