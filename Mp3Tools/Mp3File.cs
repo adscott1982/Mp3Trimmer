@@ -7,6 +7,8 @@
 // - When all parameters are valid, file is generated
 // - When all parameters are valid, but endPosition is after the end of the file, file is generated
 
+using System.Collections.Generic;
+
 namespace Mp3Tools
 {
     using System;
@@ -85,13 +87,19 @@ namespace Mp3Tools
                 while (mp3FileReader.CurrentTime < endPosition)
                 {
                     var splitTime = mp3FileReader.CurrentTime + splitDuration;
-                    var fileName = Path.GetFileNameWithoutExtension(targetFile);
+                    var albumName = Path.GetFileNameWithoutExtension(targetFile);
                     var directoryPath = Path.GetDirectoryName(targetFile);
-                    fileName += $"-{currentSplit:D3}.mp3";
+                    var trackName = albumName + $"-{currentSplit:D3}";
+                    var fileName = trackName + ".mp3";
                     var filePath = Path.Combine(directoryPath, fileName);
 
                     using (var writer = File.Create(filePath))
                     {
+                        // Write tags to file
+                        var tags = GetTags(currentSplit, trackName, albumName);
+                        writer.Write(tags.RawData, 0, tags.RawData.Length);
+
+                        // Write audio to file
                         while (mp3FileReader.CurrentTime < splitTime)
                         {
                             var frame = mp3FileReader.ReadNextFrame();
@@ -109,6 +117,19 @@ namespace Mp3Tools
                     currentSplit++;
                 }
             }
+        }
+
+        private static Id3v2Tag GetTags(int currentSplit, string trackName, string albumName)
+        {
+            var tagDictionary = new Dictionary<string, string>
+            {
+                {"TRCK", currentSplit.ToString()}, // Track number
+                {"TIT2", trackName}, // Track name
+                {"TALB", albumName} // Album name
+            };
+
+            var tags = Id3v2Tag.Create(tagDictionary);
+            return tags;
         }
     }
 }
