@@ -19,6 +19,8 @@ namespace Mp3Trimmer
         // TODO Implement callbacks from trimming task into log
         // TODO Change timer controls to numeric up down for hour/min/sec
 
+        private string currentPath;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ICommand LoadMp3FileCommand { get; }
@@ -244,6 +246,8 @@ namespace Mp3Trimmer
 
             SplitCount = 1;
             IsIdle = true;
+
+            this.currentPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         }
 
         #endregion
@@ -259,12 +263,13 @@ namespace Mp3Trimmer
         {
             var openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "MP3 files (*.mp3)|*.mp3";
-            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            openFileDialog.InitialDirectory = this.currentPath;
 
             if (openFileDialog.ShowDialog() == true)
             {
                 IsIdle = false;
 
+                this.currentPath = Path.GetDirectoryName(openFileDialog.FileName);
                 this.Mp3FileLoaded = await Task.Run<Mp3File>(() => new Mp3File(openFileDialog.FileName));
 
                 IsIdle = true;
@@ -279,7 +284,7 @@ namespace Mp3Trimmer
         private void SelectFolder(object obj)
         {
             var folderDialog = new VistaFolderBrowserDialog();
-            folderDialog.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            folderDialog.SelectedPath = this.currentPath + @"\";
             folderDialog.Description = "Select the output folder for the trimmed MP3 file(s)";
             folderDialog.ShowNewFolderButton = true;
             folderDialog.UseDescriptionForTitle = true;

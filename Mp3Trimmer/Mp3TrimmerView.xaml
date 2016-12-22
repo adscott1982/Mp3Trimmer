@@ -30,24 +30,23 @@
         <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Vertical">
             <Separator VerticalAlignment="Top" Height="3"/>
             <TextBlock Margin="5" FontWeight="Bold">Trim Start</TextBlock>
-            <xctk:TimeSpanUpDown HorizontalAlignment="Left" Width="200" TextAlignment="Left" Margin="5" Value="{Binding TrimStartPosition}" FontSize="48"/>
+            <xctk:TimeSpanUpDown HorizontalAlignment="Left" Width="280" TextAlignment="Left" Margin="5" Value="{Binding TrimStartPosition}" FontSize="68"/>
         </StackPanel>
         <!--Trim End Section-->
         <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Vertical">
             <Separator VerticalAlignment="Top" Height="3"/>
             <TextBlock Margin="5" FontWeight="Bold">Trim End</TextBlock>
-            <xctk:TimeSpanUpDown HorizontalAlignment="Left" Width="200" TextAlignment="Left" Margin="5" Value="{Binding TrimEndPosition}" FontSize="48"/>
+            <xctk:TimeSpanUpDown HorizontalAlignment="Left" Width="280" TextAlignment="Left" Margin="5" Value="{Binding TrimEndPosition}" FontSize="68"/>
         </StackPanel>
         <!--Splits Section-->
         <StackPanel Grid.Column="0" Grid.Row="3" Orientation="Vertical">
             <Separator VerticalAlignment="Top"/>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Margin="5" FontWeight="Bold">Split Files</TextBlock>
+                <TextBlock Margin="5" FontWeight="Bold">Split Duration</TextBlock>
                 <TextBlock Margin="5" Text="Count ="/>
                 <xctk:IntegerUpDown Margin="5" Minimum="1" Maximum="999" Value="{Binding SplitCount}"/>
             </StackPanel>
-            <TextBlock Margin="5">Split Duration:</TextBlock>
-            <xctk:TimeSpanUpDown HorizontalAlignment="Left" Width="200" TextAlignment="Left" ShowButtonSpinner="False" IsReadOnly="True" Margin="5" FontSize="48" Value="{Binding SplitDuration}" />
+            <xctk:TimeSpanUpDown HorizontalAlignment="Left" Width="280" TextAlignment="Left" ShowButtonSpinner="False" IsReadOnly="True" Margin="5" FontSize="68" Value="{Binding SplitDuration}" />
         </StackPanel>
         <!--Process Section-->
         <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="4">
