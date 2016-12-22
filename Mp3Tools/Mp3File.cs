@@ -21,28 +21,31 @@ namespace Mp3Tools
     /// </summary>
     public class Mp3File
     {
-        public string FilePath { get; }
-        public string FileName { get; }
-        public TimeSpan Length { get; }
-        public float SizeMb { get; }
+        public static Mp3FileReader Mp3Reader { get; set; }
+        public static string FilePath { get; set; }
+        public static string FileName { get; set; }
+        public static TimeSpan Length { get; set; }
+        public static float SizeMb { get; set; }
 
         public Mp3File(string path)
+        {
+            Load(path);
+        }
+
+        public static void Load(string path)
         {
             var fileInfo = new FileInfo(path);
 
             if (!fileInfo.Exists) throw new FileNotFoundException($"File not found: {path}");
             if (fileInfo.Extension.ToLowerInvariant() != ".mp3") throw new FileFormatException("File extension must be .MP3");
 
-            this.FilePath = fileInfo.FullName;
-            this.FileName = fileInfo.Name;
-            this.SizeMb = fileInfo.Length / 1000000f;
+            FilePath = fileInfo.FullName;
+            FileName = fileInfo.Name;
+            SizeMb = fileInfo.Length / 1000000f;
 
-            using (var mp3FileReader = new Mp3FileReader(path))
-            {
-                this.Length = mp3FileReader.TotalTime;
-            }
+            Mp3Reader = new Mp3FileReader(path);
+            Length = Mp3Reader.TotalTime;
         }
-
         /// <summary>
         /// Will trim an MP3 file to a target file based on provided parameters.
         /// </summary>
@@ -53,14 +56,18 @@ namespace Mp3Tools
         /// <param name="progressHandler"></param>
         public static void Trim(string sourceFile, string targetFile, TimeSpan startPosition, TimeSpan endPosition, ProgressManager progressManager)
         {
-            using (var mp3FileReader = new Mp3FileReader(sourceFile))
+            if (sourceFile != FilePath)
+            {
+                Load(sourceFile);
+            }
+
             using (var writer = File.Create(targetFile))
             {
-                mp3FileReader.CurrentTime = startPosition;
+                Mp3Reader.CurrentTime = startPosition;
 
-                while (mp3FileReader.CurrentTime < endPosition)
+                while (Mp3Reader.CurrentTime < endPosition)
                 {
-                    var frame = mp3FileReader.ReadNextFrame();
+                    var frame = Mp3Reader.ReadNextFrame();
                     if (frame == null) break;
                     writer.Write(frame.RawData, 0, frame.RawData.Length);
                 }
@@ -78,44 +85,46 @@ namespace Mp3Tools
         /// <param name="progressHandler"></param>
         public static void Trim(string sourceFile, string targetFile, TimeSpan startPosition, TimeSpan endPosition, TimeSpan splitDuration, ProgressManager progressManager)
         {
-            using (var mp3FileReader = new Mp3FileReader(sourceFile))
+            if (sourceFile != FilePath)
             {
-                // Start at defined start position
-                mp3FileReader.CurrentTime = startPosition;
-                var currentSplit = 1;
+                Load(sourceFile);
+            }
 
-                while (mp3FileReader.CurrentTime < endPosition)
+            // Start at defined start position
+            Mp3Reader.CurrentTime = startPosition;
+            var currentSplit = 1;
+
+            while (Mp3Reader.CurrentTime < endPosition)
+            {
+                var splitTime = Mp3Reader.CurrentTime + splitDuration;
+                var albumName = Path.GetFileNameWithoutExtension(targetFile);
+                var directoryPath = Path.GetDirectoryName(targetFile);
+                var trackName = albumName + $"-{currentSplit:D3}";
+                var fileName = trackName + ".mp3";
+                var filePath = Path.Combine(directoryPath, fileName);
+
+                using (var writer = File.Create(filePath))
                 {
-                    var splitTime = mp3FileReader.CurrentTime + splitDuration;
-                    var albumName = Path.GetFileNameWithoutExtension(targetFile);
-                    var directoryPath = Path.GetDirectoryName(targetFile);
-                    var trackName = albumName + $"-{currentSplit:D3}";
-                    var fileName = trackName + ".mp3";
-                    var filePath = Path.Combine(directoryPath, fileName);
+                    // Write tags to file
+                    var tags = GetTags(currentSplit, trackName, albumName);
+                    writer.Write(tags.RawData, 0, tags.RawData.Length);
 
-                    using (var writer = File.Create(filePath))
+                    // Write audio to file
+                    while (Mp3Reader.CurrentTime < splitTime)
                     {
-                        // Write tags to file
-                        var tags = GetTags(currentSplit, trackName, albumName);
-                        writer.Write(tags.RawData, 0, tags.RawData.Length);
-
-                        // Write audio to file
-                        while (mp3FileReader.CurrentTime < splitTime)
-                        {
-                            var frame = mp3FileReader.ReadNextFrame();
-                            if (frame == null) break;
-                            writer.Write(frame.RawData, 0, frame.RawData.Length);
-                        }
+                        var frame = Mp3Reader.ReadNextFrame();
+                        if (frame == null) break;
+                        writer.Write(frame.RawData, 0, frame.RawData.Length);
                     }
-
-                    var relativeCurrTime = mp3FileReader.CurrentTime - startPosition;
-                    var relativeEndTime = endPosition - startPosition;
-                    var progress = Math.Round((double)relativeCurrTime.Ticks / relativeEndTime.Ticks * 100);
-
-                    progressManager.ProgressPercentage.Report((int)progress);
-                    progressManager.ProgressString.Report($"Written split [{currentSplit}]: {fileName}");
-                    currentSplit++;
                 }
+
+                var relativeCurrTime = Mp3Reader.CurrentTime - startPosition;
+                var relativeEndTime = endPosition - startPosition;
+                var progress = Math.Round((double)relativeCurrTime.Ticks / relativeEndTime.Ticks * 100);
+
+                progressManager.ProgressPercentage.Report((int)progress);
+                progressManager.ProgressString.Report($"Written split [{currentSplit}]: {fileName}");
+                currentSplit++;
             }
         }
 

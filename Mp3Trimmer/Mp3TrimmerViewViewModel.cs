@@ -316,7 +316,7 @@ namespace Mp3Trimmer
 
             IsIdle = false;
 
-            var filename = Path.GetFileNameWithoutExtension(Mp3FileLoaded.FilePath) + "-trimmed.mp3";
+            var filename = Path.GetFileNameWithoutExtension(Mp3File.FilePath) + "-trimmed.mp3";
             var targetPath = Path.Combine(OutputPath, filename);
 
             Logger.Add($"Output path - {targetPath}");
@@ -325,12 +325,12 @@ namespace Mp3Trimmer
             if (SplitCount > 1)
             {
                 await Task.Run(() =>
-                    Mp3File.Trim(Mp3FileLoaded.FilePath, targetPath, TrimStartPosition, TrimEndPosition, SplitDuration, progressManager));
+                    Mp3File.Trim(Mp3File.FilePath, targetPath, TrimStartPosition, TrimEndPosition, SplitDuration, progressManager));
             }
             else
             {
                 await Task.Run(() =>
-                    Mp3File.Trim(Mp3FileLoaded.FilePath, targetPath, TrimStartPosition, TrimEndPosition, progressManager));
+                    Mp3File.Trim(Mp3File.FilePath, targetPath, TrimStartPosition, TrimEndPosition, progressManager));
             }
 
             Logger.Add("Trim complete.");
@@ -354,7 +354,7 @@ namespace Mp3Trimmer
 
             if (this.Mp3FileLoaded != null)
             {
-                maxValue = Mp3FileLoaded.Length;
+                maxValue = Mp3File.Length;
             }
 
             var result = value.Clamp(minValue, maxValue);
@@ -374,7 +374,7 @@ namespace Mp3Trimmer
 
             if (this.Mp3FileLoaded != null)
             {
-                maxValue = Mp3FileLoaded.Length;
+                maxValue = Mp3File.Length;
             }
 
             var result = value.Clamp(minValue, maxValue);
@@ -413,9 +413,9 @@ namespace Mp3Trimmer
 
         private void UpdateMp3FileLabels()
         {
-            Mp3FileNameLabel = this.Mp3FileLoaded.FileName;
-            Mp3FileSizeLabel = $"{this.Mp3FileLoaded.SizeMb:N2} MB";
-            Mp3FileLengthLabel = this.Mp3FileLoaded.Length.ToHourMinSec();
+            Mp3FileNameLabel = Mp3File.FileName;
+            Mp3FileSizeLabel = $"{Mp3File.SizeMb:N2} MB";
+            Mp3FileLengthLabel = Mp3File.Length.ToHourMinSec();
         }
 
         private void UpdateTrimDurationLabel()
