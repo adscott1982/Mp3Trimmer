@@ -46,6 +46,7 @@ namespace Mp3Tools
             Mp3Reader = new Mp3FileReader(path);
             Length = Mp3Reader.TotalTime;
         }
+
         /// <summary>
         /// Will trim an MP3 file to a target file based on provided parameters.
         /// </summary>
