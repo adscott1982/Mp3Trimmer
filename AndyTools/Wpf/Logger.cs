@@ -7,6 +7,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Linq;
+
 namespace AndyTools.Wpf
 {
     using System;
@@ -45,6 +47,18 @@ namespace AndyTools.Wpf
 
             var time = DateTime.Now.ToString("HH:mm:ss");
             this.Log.Add($"{time} - {logEntry}");
+        }
+
+        public void Append(string logAppend)
+        {
+            if (string.IsNullOrWhiteSpace(logAppend))
+            {
+                return;
+            }
+
+            var currentString = this.Log.Last();
+            var newString = currentString + logAppend;
+            this.Log[this.Log.Count - 1] = newString;
         }
     }
 }

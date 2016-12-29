@@ -28,5 +28,14 @@ namespace AndyTools.Wpf
         /// The log entry.
         /// </param>
         void Add(string logEntry);
+
+        /// <summary>
+        /// Append an item to the latest log entry
+        /// </summary>
+        /// <param name="logAppend">
+        /// The string to be appended
+        /// </param>
+        void Append(string logAppend);
+
     }
 }

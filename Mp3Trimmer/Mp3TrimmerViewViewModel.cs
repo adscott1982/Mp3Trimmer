@@ -266,10 +266,10 @@ namespace Mp3Trimmer
             if (openFileDialog.ShowDialog() == true)
             {
                 IsIdle = false;
-
+                this.Logger.Add($"Loading file: {openFileDialog.FileName} ...");
                 this._currentPath = Path.GetDirectoryName(openFileDialog.FileName);
                 this.Mp3FileLoaded = await Task.Run<Mp3File>(() => new Mp3File(openFileDialog.FileName));
-
+                this.Logger.Append(" complete.");
                 IsIdle = true;
             }
         }
