@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Mp3Utilities
 {
@@ -20,13 +8,25 @@ namespace Mp3Utilities
     /// </summary>
     public partial class MainWindow : Window
     {
-        public UserControl TrimmerView { get; }
-
         public MainWindow()
         {
             InitializeComponent();
             DataContext = this;
-            TrimmerView = new Mp3Trimmer.TrimmerView();
+            this.CreateTabs();
+            this.CreateTabs();
+            this.CreateTabs();
+            this.CreateTabs();
+
+        }
+
+        private void CreateTabs()
+        {
+            var trimmerTab = new TabItem();
+            var trimmerView = new Mp3Trimmer.TrimmerView();
+            trimmerTab.Content = trimmerView;
+            trimmerTab.Header = trimmerView.Name;
+
+            this.TabControl.Items.Add(trimmerTab);
         }
     }
 }

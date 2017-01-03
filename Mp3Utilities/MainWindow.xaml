@@ -8,13 +8,6 @@
         Title="MP3 Utilities" Height="600" Width="800">
 
     <Grid>
-        <TabControl>
-            <TabItem Header="Trimmer">
-                <ContentControl Name="TrimmerContent" Content="{Binding TrimmerView}"></ContentControl>
-            </TabItem>
-            <TabItem Header="Track Ordering">
-                <ContentControl Name="OrderingContent" Content="Order Tracks!"></ContentControl>
-            </TabItem>
-        </TabControl>
+        <TabControl Name="TabControl"/>
     </Grid>
 </Window>
