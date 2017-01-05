@@ -54,7 +54,7 @@ namespace Mp3Tools
         /// <param name="targetFile">The target MP3 file.</param>
         /// <param name="startPosition">The start position of the trim.</param>
         /// <param name="endPosition">The end position of the trim.</param>
-        /// <param name="progressHandler"></param>
+        /// <param name="progressManager"></param>
         public static void Trim(string sourceFile, string targetFile, TimeSpan startPosition, TimeSpan endPosition, ProgressManager progressManager)
         {
             if (sourceFile != FilePath)

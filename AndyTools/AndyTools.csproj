@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Utilities\ProgressManager.cs" />
     <Compile Include="Wpf\ILogger.cs" />
     <Compile Include="Wpf\Logger.cs" />
@@ -48,6 +49,7 @@
     <Compile Include="Utilities\TimeSpanExtensions.cs" />
     <Compile Include="Utilities\MathExtensions.cs" />
     <Compile Include="Wpf\CustomCommand.cs" />
+    <Compile Include="Wpf\ViewModelBase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

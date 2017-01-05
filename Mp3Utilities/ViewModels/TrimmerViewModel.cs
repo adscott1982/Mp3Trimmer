@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Mp3Trimmer
+namespace Mp3Utilities.ViewModels
 {
     using System.IO;
     using System.Windows.Input;
@@ -13,13 +13,11 @@ namespace Mp3Trimmer
     using Ookii.Dialogs.Wpf;
     using Microsoft.Win32;
 
-    public class Mp3TrimmerViewViewModel : INotifyPropertyChanged
+    public class TrimmerViewModel : ViewModelBase
     {
         // TODO Implement IOC throughout viewmodel
 
         private string _currentPath;
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public ICommand LoadMp3FileCommand { get; }
         public ICommand SelectFolderCommand { get; }
@@ -235,7 +233,7 @@ namespace Mp3Trimmer
 
         #region Constructor
 
-        public Mp3TrimmerViewViewModel()
+        public TrimmerViewModel()
         {
             Logger = new Logger();
             LoadMp3FileCommand = new CustomCommand(LoadMp3File, CanLoadMp3File);
@@ -419,15 +417,6 @@ namespace Mp3Trimmer
         private void UpdateTrimDurationLabel()
         {
             this.TrimDurationLabel = TrimDuration.ToHourMinSec();
-        }
-
-        #endregion
-
-        #region INotifyPropertyChanged
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #endregion

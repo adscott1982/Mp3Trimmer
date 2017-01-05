@@ -13,19 +13,19 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Mp3Trimmer
+namespace Mp3Utilities.Views
 {
     /// <summary>
     /// Interaction logic for TrimmerView.xaml
     /// </summary>
     public partial class TrimmerView : UserControl
     {
-        public Mp3TrimmerViewViewModel ViewModel { get; }
+        public ViewModels.TrimmerViewModel ViewModel { get; }
 
         public TrimmerView()
         {
             InitializeComponent();
-            this.ViewModel = new Mp3TrimmerViewViewModel();
+            this.ViewModel = new ViewModels.TrimmerViewModel();
             this.DataContext = this.ViewModel;
         }
     }
