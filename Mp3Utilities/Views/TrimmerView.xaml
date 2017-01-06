@@ -7,6 +7,9 @@
              xmlns:local="clr-namespace:Mp3Utilities.Views"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style TargetType="Button" BasedOn="{StaticResource ButtonStyleNormal}"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="35"/>
@@ -22,8 +25,8 @@
         </Grid.ColumnDefinitions>
         <!--File Section-->
         <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
-            <Button Padding="5, 2" Margin="5" Command="{Binding LoadMp3FileCommand}">Load File</Button>
-            <Button Padding="5, 2" Margin="5" Command="{Binding SelectFolderCommand}">Destination Folder</Button>
+            <Button Command="{Binding LoadMp3FileCommand}">Load File</Button>
+            <Button Command="{Binding SelectFolderCommand}">Destination Folder</Button>
         </StackPanel>
         <!--Trim Start Section-->
         <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Vertical">
@@ -51,7 +54,7 @@
         <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="4">
             <Separator VerticalAlignment="Top"/>
             <StackPanel  Orientation="Horizontal">
-                <Button Padding="5,2" Margin="5" Command="{Binding ProcessFileCommand}">Process</Button>
+                <Button Command="{Binding ProcessFileCommand}">Process</Button>
             </StackPanel>
         </StackPanel>
 

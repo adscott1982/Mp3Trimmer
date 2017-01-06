@@ -10,13 +10,24 @@
     <UserControl.DataContext>
         <viewModels:TrackOrderViewModel/>
     </UserControl.DataContext>
+    <UserControl.Resources>
+        <Style TargetType="Button" BasedOn="{StaticResource ButtonStyleNormal}"/>
+    </UserControl.Resources>
     <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-        <StackPanel Orientation="Vertical" Grid.Column="0">
-            <Button Margin="5" Content="Hello"/>
-        </StackPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="35"/>
+        </Grid.RowDefinitions>
+        <Button Grid.Column="0" Content="Select Folder" Command="{Binding SelectFolderCommand}"/>
+        <TextBlock Margin="5" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" FontWeight="Bold" Text="{Binding Folder.FullName}" />
+        <ListView Margin="5" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding Mp3Files}">
+            
+        </ListView>
+        <ProgressBar Margin="5" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Value="{Binding ProgressBarValue}"/>
     </Grid>
 </UserControl>

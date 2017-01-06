@@ -4,6 +4,9 @@
              xmlns:local="clr-namespace:Mp3Utilities"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
-         
+         <Style x:Key="ButtonStyleNormal" TargetType="Button">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="5, 2"/>
+        </Style>
     </Application.Resources>
 </Application>
