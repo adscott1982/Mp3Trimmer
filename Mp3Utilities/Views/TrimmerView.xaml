@@ -6,8 +6,7 @@
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:local="clr-namespace:Mp3Utilities.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="800"
-             Name="Trimmer">
+             d:DesignHeight="600" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="35"/>

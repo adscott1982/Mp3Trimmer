@@ -4,10 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mp3Utilities"
+        xmlns:views="clr-namespace:Mp3Utilities.Views"
+        xmlns:viewModels="clr-namespace:Mp3Utilities.ViewModels"
         mc:Ignorable="d"
-        Title="MP3 Utilities" Height="600" Width="800">
-
+        Title="MP3 Utilities" Height="600" Width="800" Icon="/MP3 Utilities;component/Resources/wrench.ico">
+    <Window.DataContext>
+        <viewModels:MainWindowViewModel/>
+    </Window.DataContext>
     <Grid>
-        <TabControl Margin ="2" Name="TabControl"/>
+        <TabControl Margin="1" Name="TabControl" ItemsSource="{Binding Path=TabItems}"/>
     </Grid>
 </Window>

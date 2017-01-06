@@ -1,17 +1,14 @@
-﻿using System.Threading.Tasks;
-
-namespace Mp3Utilities.ViewModels
+﻿namespace Mp3Utilities.ViewModels
 {
     using System.IO;
     using System.Windows.Input;
     using AndyTools.Wpf;
-    using System.Runtime.CompilerServices;
-    using System.ComponentModel;
     using Mp3Tools;
     using System;
     using AndyTools.Utilities;
     using Ookii.Dialogs.Wpf;
     using Microsoft.Win32;
+    using System.Threading.Tasks;
 
     public class TrimmerViewModel : ViewModelBase
     {
