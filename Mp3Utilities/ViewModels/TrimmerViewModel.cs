@@ -326,6 +326,8 @@
                     Mp3File.Trim(Mp3File.FilePath, targetPath, TrimStartPosition, TrimEndPosition, progressManager));
             }
 
+            Mp3File.SetId3Tag(Mp3File.FilePath, "TALB", "Kid B");
+
             Logger.Add("Trim complete.");
 
             IsIdle = true;

@@ -16,7 +16,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
         <StackPanel Orientation="Vertical" Grid.Column="0">
-            <Button Content="Hello"/>
+            <Button Margin="5" Content="Hello"/>
         </StackPanel>
     </Grid>
 </UserControl>

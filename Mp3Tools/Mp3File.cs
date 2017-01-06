@@ -8,6 +8,8 @@
 // - When all parameters are valid, but endPosition is after the end of the file, file is generated
 
 using System.Collections.Generic;
+using TagLib;
+using Tag = TagLib.Id3v2.Tag;
 
 namespace Mp3Tools
 {
@@ -140,6 +142,16 @@ namespace Mp3Tools
 
             var tags = Id3v2Tag.Create(tagDictionary);
             return tags;
+        }
+
+        public static void SetId3Tag(string fileName, string key, string value)
+        {
+            Mp3Reader?.Close();
+
+            TagLib.File file = TagLib.File.Create(fileName);
+            var tag = (Tag)file.GetTag(TagTypes.Id3v2);
+            tag.SetTextFrame(key, value);
+            file.Save();
         }
     }
 }
