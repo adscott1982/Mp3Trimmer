@@ -7,9 +7,6 @@
 // - When all parameters are valid, file is generated
 // - When all parameters are valid, but endPosition is after the end of the file, file is generated
 
-using System.Collections.Generic;
-using TagLib;
-using Tag = TagLib.Id3v2.Tag;
 
 namespace Mp3Tools
 {
@@ -17,6 +14,8 @@ namespace Mp3Tools
     using System.IO;
     using NAudio.Wave;
     using AndyTools.Utilities;
+    using System.Collections.Generic;
+    using Tag = TagLib.Id3v2.Tag;
 
     /// <summary>
     /// Class which provides MP3 file operations.
@@ -149,7 +148,7 @@ namespace Mp3Tools
             Mp3Reader?.Close();
 
             TagLib.File file = TagLib.File.Create(fileName);
-            var tag = (Tag)file.GetTag(TagTypes.Id3v2);
+            var tag = (Tag)file.GetTag(TagLib.TagTypes.Id3v2);
             tag.SetTextFrame(key, value);
             file.Save();
         }

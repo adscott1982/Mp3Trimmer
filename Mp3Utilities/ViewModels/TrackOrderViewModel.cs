@@ -7,7 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
+using AndyTools.Utilities;
 using AndyTools.Wpf;
+using Mp3Tools;
 using Ookii.Dialogs.Wpf;
 
 namespace Mp3Utilities.ViewModels
@@ -16,9 +18,13 @@ namespace Mp3Utilities.ViewModels
     {
         public ICommand SelectFolderCommand { get; }
 
-        private ObservableCollection<FileInfo> _mp3Files;
+        public ICommand RandomizeOrderCommand { get; }
 
-        public ObservableCollection<FileInfo> Mp3Files
+        #region Properties
+
+        private ObservableCollection<Mp3FileInfo> _mp3Files;
+
+        public ObservableCollection<Mp3FileInfo> Mp3Files
         {
             get
             {
@@ -45,9 +51,28 @@ namespace Mp3Utilities.ViewModels
             }
         }
 
+        #endregion
+
         public TrackOrderViewModel()
         {
             SelectFolderCommand = new CustomCommand(SelectFolder, CanSelectFolder);
+            this.RandomizeOrderCommand = new CustomCommand(RandomizeOrder, CanRandomizeOrder);
+        }
+
+        private bool CanRandomizeOrder(object obj)
+        {
+            if (this.Mp3Files != null && this.Mp3Files.Count > 1)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void RandomizeOrder(object obj)
+        {
+            var shuffledMp3Files = this.Mp3Files.Shuffle();
+            this.Mp3Files = new ObservableCollection<Mp3FileInfo>(shuffledMp3Files);
         }
 
         private bool CanSelectFolder(object obj)
@@ -64,9 +89,15 @@ namespace Mp3Utilities.ViewModels
             if (folderDialog.ShowDialog() == true)
             {
                 this.Folder = new DirectoryInfo(folderDialog.SelectedPath);
-                var files = this.Folder.EnumerateFiles().Where(f => f.Extension == ".mp3");
-                this.Mp3Files = new ObservableCollection<FileInfo>(files);
+
+                var files = this.Folder.EnumerateFiles()
+                    .Where(f => f.Extension == ".mp3")
+                    .Select(f => new Mp3FileInfo(f))
+                    .OrderBy(f => f.Id3V2Tag.Track);
+
+                this.Mp3Files = new ObservableCollection<Mp3FileInfo>(files);
             }
         }
+
     }
 }
