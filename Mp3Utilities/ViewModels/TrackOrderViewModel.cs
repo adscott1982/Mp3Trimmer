@@ -20,7 +20,41 @@ namespace Mp3Utilities.ViewModels
 
         public ICommand RandomizeOrderCommand { get; }
 
+        public ICommand ConfirmCommand { get; }
+
         #region Properties
+
+        private bool _isBusy;
+
+        public bool IsBusy
+        {
+            get
+            {
+                return this._isBusy;
+            }
+            set
+            {
+                if (this._isBusy == value) return;
+                this._isBusy = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        private bool _hasRandomized;
+
+        public bool HasRandomized
+        {
+            get
+            {
+                return this._hasRandomized;
+            }
+            set
+            {
+                if (this._hasRandomized == value) return;
+                this._hasRandomized = value;
+                this.OnPropertyChanged();
+            }
+        }
 
         private ObservableCollection<Mp3FileInfo> _mp3Files;
 
@@ -55,29 +89,48 @@ namespace Mp3Utilities.ViewModels
 
         public TrackOrderViewModel()
         {
-            SelectFolderCommand = new CustomCommand(SelectFolder, CanSelectFolder);
+            this.SelectFolderCommand = new CustomCommand(SelectFolder, CanSelectFolder);
             this.RandomizeOrderCommand = new CustomCommand(RandomizeOrder, CanRandomizeOrder);
+            this.ConfirmCommand = new CustomCommand(Confirm, CanConfirm);
+        }
+
+        private bool CanConfirm(object obj)
+        {
+            return this.HasRandomized && !this.IsBusy;
+        }
+
+        private void Confirm(object obj)
+        {
+            SaveRandomTrackOrder();
+            LoadFolder(this.Folder.FullName);
+        }
+
+        private void SaveRandomTrackOrder()
+        {
+            for (var i = 1; i <= this.Mp3Files.Count; i++)
+            {
+                var file = this.Mp3Files[i - 1];
+                file.Id3V2Tag.Track = (uint)i;
+                file.SetTagByFrameId("TALB", "ANDY ALBUM Yo");
+                file.SaveTag();
+            }
         }
 
         private bool CanRandomizeOrder(object obj)
         {
-            if (this.Mp3Files != null && this.Mp3Files.Count > 1)
-            {
-                return true;
-            }
-
-            return false;
+            return this.Mp3Files != null && this.Mp3Files.Count > 1 && !this.IsBusy;
         }
 
         private void RandomizeOrder(object obj)
         {
             var shuffledMp3Files = this.Mp3Files.Shuffle();
             this.Mp3Files = new ObservableCollection<Mp3FileInfo>(shuffledMp3Files);
+            this.HasRandomized = true;
         }
 
         private bool CanSelectFolder(object obj)
         {
-            return true;
+            return !this.IsBusy;
         }
 
         private void SelectFolder(object obj)
@@ -88,16 +141,22 @@ namespace Mp3Utilities.ViewModels
 
             if (folderDialog.ShowDialog() == true)
             {
-                this.Folder = new DirectoryInfo(folderDialog.SelectedPath);
-
-                var files = this.Folder.EnumerateFiles()
-                    .Where(f => f.Extension == ".mp3")
-                    .Select(f => new Mp3FileInfo(f))
-                    .OrderBy(f => f.Id3V2Tag.Track);
-
-                this.Mp3Files = new ObservableCollection<Mp3FileInfo>(files);
+                this.LoadFolder(folderDialog.SelectedPath);
             }
         }
 
+        private void LoadFolder(string path)
+        {
+            this.Folder = new DirectoryInfo(path);
+
+            var files = this.Folder.EnumerateFiles()
+                .Where(f => f.Extension == ".mp3")
+                .Select(f => new Mp3FileInfo(f))
+                .OrderBy(f => f.Id3V2Tag.Track);
+
+            this.Mp3Files = new ObservableCollection<Mp3FileInfo>(files);
+
+            this.HasRandomized = false;
+        }
     }
 }

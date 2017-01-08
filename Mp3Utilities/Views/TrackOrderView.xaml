@@ -34,7 +34,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button Grid.Row="2" Grid.Column="0" Content="Confirm"/>
+        <Button Grid.Row="2" Grid.Column="0" Content="Confirm" Command="{Binding ConfirmCommand}"/>
         <ProgressBar Margin="5" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Value="0"/>
     </Grid>
 </UserControl>

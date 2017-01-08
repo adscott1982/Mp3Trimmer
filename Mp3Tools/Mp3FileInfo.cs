@@ -12,11 +12,23 @@ namespace Mp3Tools
     {
         public FileInfo FileInfo { get; set; }
         public Tag Id3V2Tag { get; set; }
+        private TagLib.File file;
 
         public Mp3FileInfo(FileInfo fileInfo)
         {
             this.FileInfo = fileInfo;
-            this.Id3V2Tag = (Tag)TagLib.File.Create(fileInfo.FullName).GetTag(TagLib.TagTypes.Id3v2);
+            this.file = TagLib.File.Create(fileInfo.FullName);
+            this.Id3V2Tag = (Tag)file.GetTag(TagLib.TagTypes.Id3v2);
+        }
+
+        public void SetTagByFrameId(string frameId, string value)
+        {
+            Id3V2Tag.SetTextFrame(frameId, value);
+        }
+
+        public void SaveTag()
+        {
+            this.file.Save();
         }
     }
 }
