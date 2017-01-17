@@ -14,7 +14,7 @@ namespace AndyTools.Utilities
             return val;
         }
 
-        public static bool In2DArrayBounds(this object[,] array, int x, int y)
+        public static bool In2DArrayBounds<T>(this T[,] array, int x, int y)
         {
             var result = true;
 

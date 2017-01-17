@@ -30,5 +30,15 @@ namespace Mp3Tools
         {
             this.file.Save();
         }
+
+        public static IEnumerable<Mp3FileInfo> GetMp3FilesFromPath(DirectoryInfo folder)
+        {
+            var files = folder.EnumerateFiles()
+                .Where(f => f.Extension == ".mp3")
+                .Select(f => new Mp3FileInfo(f))
+                .OrderBy(f => f.Id3V2Tag.Track);
+
+            return files;
+        }
     }
 }

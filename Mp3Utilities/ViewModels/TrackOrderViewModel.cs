@@ -24,22 +24,6 @@ namespace Mp3Utilities.ViewModels
 
         #region Properties
 
-        private bool _isBusy;
-
-        public bool IsBusy
-        {
-            get
-            {
-                return this._isBusy;
-            }
-            set
-            {
-                if (this._isBusy == value) return;
-                this._isBusy = value;
-                this.OnPropertyChanged();
-            }
-        }
-
         private bool _hasRandomized;
 
         public bool HasRandomized
@@ -96,7 +80,7 @@ namespace Mp3Utilities.ViewModels
 
         private bool CanConfirm(object obj)
         {
-            return this.HasRandomized && !this.IsBusy;
+            return this.HasRandomized;
         }
 
         private void Confirm(object obj)
@@ -118,7 +102,7 @@ namespace Mp3Utilities.ViewModels
 
         private bool CanRandomizeOrder(object obj)
         {
-            return this.Mp3Files != null && this.Mp3Files.Count > 1 && !this.IsBusy;
+            return this.Mp3Files != null && this.Mp3Files.Count > 1;
         }
 
         private void RandomizeOrder(object obj)
@@ -130,7 +114,7 @@ namespace Mp3Utilities.ViewModels
 
         private bool CanSelectFolder(object obj)
         {
-            return !this.IsBusy;
+            return true;
         }
 
         private void SelectFolder(object obj)
@@ -148,12 +132,7 @@ namespace Mp3Utilities.ViewModels
         private void LoadFolder(string path)
         {
             this.Folder = new DirectoryInfo(path);
-
-            var files = this.Folder.EnumerateFiles()
-                .Where(f => f.Extension == ".mp3")
-                .Select(f => new Mp3FileInfo(f))
-                .OrderBy(f => f.Id3V2Tag.Track);
-
+            var files = Mp3FileInfo.GetMp3FilesFromPath(this.Folder);
             this.Mp3Files = new ObservableCollection<Mp3FileInfo>(files);
 
             this.HasRandomized = false;
