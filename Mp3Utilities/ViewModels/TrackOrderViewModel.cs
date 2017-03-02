@@ -40,6 +40,22 @@ namespace Mp3Utilities.ViewModels
             }
         }
 
+        private bool _isSavingTrackOrder;
+
+        public bool IsSavingTrackOrder
+        {
+            get
+            {
+                return this._isSavingTrackOrder;
+            }
+            set
+            {
+                if (this._isSavingTrackOrder == value) return;
+                this._isSavingTrackOrder = value;
+                this.OnPropertyChanged();
+            }
+        }
+
         private ObservableCollection<Mp3FileInfo> _mp3Files;
 
         public ObservableCollection<Mp3FileInfo> Mp3Files
@@ -80,13 +96,20 @@ namespace Mp3Utilities.ViewModels
 
         private bool CanConfirm(object obj)
         {
-            return this.HasRandomized;
+            return this.HasRandomized && !IsSavingTrackOrder;
         }
 
-        private void Confirm(object obj)
+        private async void Confirm(object obj)
         {
-            SaveRandomTrackOrder();
-            LoadFolder(this.Folder.FullName);
+            this.IsSavingTrackOrder = true;
+
+            await Task.Run(() =>
+            {
+                SaveRandomTrackOrder();
+                LoadFolder(this.Folder.FullName);
+            });
+
+            this.IsSavingTrackOrder = false;
         }
 
         private void SaveRandomTrackOrder()
