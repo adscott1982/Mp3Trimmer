@@ -1,4 +1,5 @@
 #MP3 Trimmer
-A tool to trim MP3 files into smaller files, by defining the start and stop of the trim, and additionally the ability to split the trim into multiple files.
+A tool for manipulating MP3 files. Features so far:
 
-Additionally there is a tool to randomly order the MP3 files in a given folder.
+ - Trim MP3 file into smaller files, including specifying the number of splits.
+ - Re-order the track numbers for a set of MP3 files in a given folder.
