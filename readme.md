@@ -1,4 +1,4 @@
-#MP3 Trimmer
+#MP3 Utilities
 A tool for manipulating MP3 files. Features so far:
 
  - Trim MP3 file into smaller files, including specifying the number of splits.
