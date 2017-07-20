@@ -14,6 +14,11 @@ namespace AndyTools.Utilities
             return val;
         }
 
+        public static bool IsEven(this int value)
+        {
+            return value % 2 == 0;
+        }
+
         public static bool In2DArrayBounds<T>(this T[,] array, int x, int y)
         {
             var result = true;
@@ -27,6 +32,26 @@ namespace AndyTools.Utilities
             }
 
             return result;
+        }
+
+        public static List<T> ShiftAndWrap<T>(this List<T> list, int shiftCount)
+        {
+            if (shiftCount == 0 || shiftCount == list.Count)
+            {
+                return list.ToList();
+            }
+
+            if (shiftCount < 0 || shiftCount > list.Count)
+            {
+                throw new ArgumentOutOfRangeException("shiftCount", "The shift amount must be non-negative and not exceed the size of the list.");
+            }
+
+            var newList = list.ToList();
+            var tempList = newList.GetRange(newList.Count - shiftCount, shiftCount);
+            newList.RemoveRange(newList.Count - shiftCount, shiftCount);
+            newList.InsertRange(0, tempList);
+
+            return newList;
         }
 
         public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source)
