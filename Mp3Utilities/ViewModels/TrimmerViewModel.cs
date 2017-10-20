@@ -207,6 +207,8 @@
             }
             set
             {
+                if (this.Mp3FileLoaded == null) value = "";
+
                 this._trimDurationLabel = $"Trim duration:\t{value}";
                 this.OnPropertyChanged();
             }
@@ -309,7 +311,7 @@
 
             IsIdle = false;
 
-            var filename = Path.GetFileNameWithoutExtension(Mp3File.FilePath) + "-trimmed.mp3";
+            var filename = Path.GetFileNameWithoutExtension(this.Mp3FileLoaded.FilePath) + "-trimmed.mp3";
             var targetPath = Path.Combine(OutputPath, filename);
 
             Logger.Add($"Output path - {targetPath}");
@@ -318,17 +320,21 @@
             if (SplitCount > 1)
             {
                 await Task.Run(() =>
-                    Mp3File.Trim(Mp3File.FilePath, targetPath, TrimStartPosition, TrimEndPosition, SplitDuration, progressManager));
+                    this.Mp3FileLoaded.Trim(Mp3FileLoaded.FilePath, targetPath, TrimStartPosition, TrimEndPosition, SplitDuration, progressManager));
             }
             else
             {
                 await Task.Run(() =>
-                    Mp3File.Trim(Mp3File.FilePath, targetPath, TrimStartPosition, TrimEndPosition, progressManager));
+                    Mp3FileLoaded.Trim(Mp3FileLoaded.FilePath, targetPath, TrimStartPosition, TrimEndPosition, progressManager));
             }
 
             Logger.Add("Trim complete.");
 
             IsIdle = true;
+
+            this.Mp3FileLoaded.Dispose();
+
+            this.Mp3FileLoaded = null;
         }
 
         #endregion
@@ -342,13 +348,14 @@
 
         private TimeSpan ValidateTrimStartPosition(TimeSpan value)
         {
+            if (this.Mp3FileLoaded == null)
+            {
+                return new TimeSpan(0, 0, 0);
+            }
+
             var maxValue = new TimeSpan(99, 59, 59);
             var minValue = new TimeSpan(0, 0, 0);
 
-            if (this.Mp3FileLoaded != null)
-            {
-                maxValue = Mp3File.Length;
-            }
 
             var result = value.Clamp(minValue, maxValue);
 
@@ -362,14 +369,15 @@
 
         private TimeSpan ValidateTrimEndPosition(TimeSpan value)
         {
+            if (this.Mp3FileLoaded == null)
+            {
+                return new TimeSpan(0, 0, 0);
+            }
+
             var maxValue = new TimeSpan(99, 59, 59);
             var minValue = new TimeSpan(0, 0, 0);
 
-            if (this.Mp3FileLoaded != null)
-            {
-                maxValue = Mp3File.Length;
-            }
-
+            maxValue = Mp3FileLoaded.Length;
             var result = value.Clamp(minValue, maxValue);
 
             if (result < TrimStartPosition)
@@ -406,9 +414,18 @@
 
         private void UpdateMp3FileLabels()
         {
-            Mp3FileNameLabel = Mp3File.FileName;
-            Mp3FileSizeLabel = $"{Mp3File.SizeMb:N2} MB";
-            Mp3FileLengthLabel = Mp3File.Length.ToHourMinSec();
+            if (this.Mp3FileLoaded == null)
+            {
+                Mp3FileNameLabel = "";
+                Mp3FileSizeLabel = "";
+                Mp3FileLengthLabel = "";
+
+                return;
+            }
+
+            Mp3FileNameLabel = Mp3FileLoaded?.FileName;
+            Mp3FileSizeLabel = $"{Mp3FileLoaded?.SizeMb:N2} MB";
+            Mp3FileLengthLabel = Mp3FileLoaded?.Length.ToHourMinSec();
         }
 
         private void UpdateTrimDurationLabel()
