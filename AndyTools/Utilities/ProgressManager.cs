@@ -1,36 +1,60 @@
-﻿using System;
-using AndyTools.Wpf;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ProgressManager.cs" company="Andrew Scott">
+//   Andrew Scott
+// </copyright>
+// <summary>
+//   Progress manager class that may be used to callback to other objects while another operation progresses.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace AndyTools.Utilities
 {
+    using System;
+
+    using AndyTools.Wpf;
+
+    /// <summary>Progress manager class that may be used to callback to other objects while another operation progresses.</summary>
     public class ProgressManager
     {
-        private ILogger logger;
-        private Action<int> externalSetProgressAction;
+        /// <summary>The logger.</summary>
+        private readonly ILogger logger;
 
-        public IProgress<string> ProgressString { get; }
-        public IProgress<int> ProgressPercentage { get; }
+        /// <summary>Action to be called when the progress is updated.</summary>
+        private readonly Action<int> externalSetProgressAction;
 
+        /// <summary>Initializes a new instance of the <see cref="ProgressManager"/> class.</summary>
+        /// <param name="logger">The logger to use for providing string updates.</param>
+        /// <param name="setProgressValueAction">The action to perform when progress is updated.</param>
         public ProgressManager(ILogger logger, Action<int> setProgressValueAction)
         {
             this.logger = logger;
             this.externalSetProgressAction = setProgressValueAction;
 
-            ProgressString = new Progress<string>(Log);
-            ProgressPercentage = new Progress<int>(SetProgressValue);
+            this.ProgressString = new Progress<string>(this.Log);
+            this.ProgressPercentage = new Progress<int>(this.SetProgressValue);
 
-            ProgressPercentage.Report(0);
+            this.ProgressPercentage.Report(0);
         }
 
+        /// <summary>Gets the progress string.</summary>
+        public IProgress<string> ProgressString { get; }
+
+        /// <summary>Gets the progress percentage.</summary>
+        public IProgress<int> ProgressPercentage { get; }
+
+        /// <summary>Log a message.</summary>
+        /// <param name="message">The message.</param>
         private void Log(string message)
         {
-            logger.Add(message);
+            this.logger.Add(message);
         }
 
+        /// <summary>Set the progress value, performing the callback.</summary>
+        /// <param name="value">The value.</param>
         private void SetProgressValue(int value)
         {
             value = value.Clamp(0, 100);
-            externalSetProgressAction(value);
+            this.externalSetProgressAction(value);
         }
     }
 }
